@@ -1,0 +1,70 @@
+  last_temp:
+    name: Utolsó Mért Hőfok (AppDaemon)
+    min: 0
+    max: 50
+    step: 0.1
+    unit_of_measurement: "°C"
+
+  heating_rate:
+    name: Tanult Felfűtési Ráta (Auto)
+    min: 0
+    max: 5
+    step: 0.05
+    initial: 0.5
+    unit_of_measurement: "°C/h" # <-- Fontos a mértékegység!
+
+  cooling_rate:
+    name: Tanult Hűlési Ráta (Auto)
+    min: -5
+    max: 0
+    step: 0.05
+    initial: -0.5
+    unit_of_measurement: "°C/h" # <-- Fontos a mértékegység!
+    
+  modulacios_delta_t_cel:
+    name: Modulációs Delta T Cél (°C)
+    min: 5
+    max: 20
+    step: 0.5
+    unit_of_measurement: "°C"
+#    mode: box
+    initial: 8.0 # Célszerű kezdeti érték a kondenzációhoz
+    
+  modulacios_delta_t_korrekcio_lepese:
+    name: Delta T Korrekció Lépés
+    min: 0.1
+    max: 5.0
+    step: 0.1
+    mode: box # Ezt 'slider'-re is cserélheted, ha az jobban tetszik.
+    unit_of_measurement: "°C"
+    initial: 1.0 # ⬅️ A finomhangolt kezdőérték, a lassabb modulációért    
+
+
+  futes_tulloves_korrekcio_c:
+    name: "Túllövés Korrekció (°C)"
+    min: -1.0
+    max: 1.0
+    step: 0.05
+    mode: box
+    unit_of_measurement: "°C"
+    icon: mdi:temperature-delta
+    initial: 0.0
+
+  modulacio_i_tag_hiba:
+    name: Moduláció I-tag Hiba (Delta T Korrekció)
+    min: -10
+    max: 10
+    step: 0.0001
+    mode: box
+    unit_of_measurement: °C
+    icon: mdi:sigma
+    initial: 0
+ 
+  futes_tehetetlensegi_ido_min:
+    name: Fűtés Tehetetlenségi Idő (perc)
+    min: 0.5
+    max: 6
+    step: 0.1
+    mode: box
+    unit_of_measurement: "min"
+    initial: 3.0 # 3 perc alapértelmezettként
