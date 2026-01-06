@@ -5,7 +5,7 @@
     max: 5
     step: 0.05
     initial: 0.5
-    unit_of_measurement: "°C/h" # <-- Fontos a mértékegység!
+    unit_of_measurement: "°C/h"
 
   cooling_rate:
     name: Tanult Hűlési Ráta (Auto)
@@ -13,7 +13,7 @@
     max: 0
     step: 0.05
     initial: -0.5
-    unit_of_measurement: "°C/h" # <-- Fontos a mértékegység!
+    unit_of_measurement: "°C/h"
     
   modulacios_delta_t_cel:
     name: Modulációs Delta T Cél (°C)
@@ -31,7 +31,7 @@
     step: 0.1
     mode: box # Ezt 'slider'-re is cserélheted, ha az jobban tetszik.
     unit_of_measurement: "°C"
-    initial: 1.0 # ⬅️ A finomhangolt kezdőérték, a lassabb modulációért    
+    initial: 1.0 #  A finomhangolt kezdőérték, a lassabb modulációért    
 
 
   futes_tulloves_korrekcio_c:
