@@ -3,9 +3,15 @@ esphome heating with weather tracking
 
 WESTEN STAR CONDENS 24  kondenzációs kazán vezerlese HA  alól.
 
-Opentherm nélküli, on-off vezérlésű kazán, modulciós vezérlése, külső hőmérséklet szimulációval.
+Opentherm nélküli, on-off vezérlésű kazán, modulciós vezérlése, külső hőmérséklet szimulációval HA alá.
 
 Hozzavalók: 
+
+Hacs-bol a Pyscript telepíteni, majd letrehozni egy pyscript mappát, abban egy learn_heat_rate.py fájlt.
+Bemásolod a py tartalmat, restart és hagyd, hogy dolgozzon egy jó pár napig.
+Rakd ki egy kartyara, hogy lásd, hogyan dolgozik a háttarben.
+
+
 
 ESP8266 Wemos mini d1
 H11F1 FET opto coupler
