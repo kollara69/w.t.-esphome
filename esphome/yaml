@@ -11,8 +11,8 @@ esp8266:
   board: d1_mini
 
 wifi:
-  ssid: Server
-  password: Makiati69
+  ssid: ****
+  password: ****
   min_auth_mode: WPA
   
 captive_portal:
@@ -21,9 +21,8 @@ logger:
 
 ota:
   platform: esphome
-  password: Makiati69
-
-web_server:
+ 
+ web_server:
   port: 80
 
 # OneWire busz definiálása (GPIO0 = D3)
@@ -133,7 +132,7 @@ switch:
     id: relay2
 
 sensor:
-  # DS18B20 Hőmérséklet érzékelő az előremenő vízhez
+  # Hőmérséklet érzékelő az előremenő vízhez
   - platform: dallas_temp 
     name: "Előremenő Víz Hőfok"
     id: eloremeno_viz_temp
@@ -141,7 +140,7 @@ sensor:
     # CSERÉLD KI a VALÓDI CÍMRE!
     address: 0x1e0625436a7b8d28
     
-  # 🆕 DS18B20 Hőmérséklet érzékelő a visszatérő vízhez
+  # Hőmérséklet érzékelő a visszatérő vízhez
   - platform: dallas_temp 
     name: "Visszatérő Víz Hőfok"
     id: visszatero_viz_temp
@@ -152,8 +151,9 @@ sensor:
   - platform: adc
     pin: A0
     name: "kazanvezerlo_analog_a0"
-# adc-ben érzékeli a hagyományos termosztát be-kikapcsolását. 
-# 10K/1KOhm osztóval 
+#ADC-vel érzékeli a hagyományos termosztát be-kikapcsolását. 
+# 10K/1KOhm osztóval a visszajelző LED-ről.
+# automatizmushoz használhatod, ha értéke nagyobb, mint 0.2V, akkor a vész (külső) termosztáton hőigény van.
 
 interval:
   - interval: 500ms
@@ -170,3 +170,7 @@ interval:
           } else {
             id(status_led_output).set_level(0.5);
           }
+ # esp beépített LED villogása jelzi az aktuális állapotot.
+ # lassú villogás -- hőigény, kazán bekapcsol.
+ # gyors villogás -- a termosztát minden (beleértve a külső, gyári termosztát) működése tilva!
+ # folyamatos -- üzemkész, de nincs hőigény.
