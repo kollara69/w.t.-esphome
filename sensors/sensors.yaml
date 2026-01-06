@@ -1,0 +1,58 @@
+# ——— KAZÁN FŰTÉSI GÖRBE (ELŐREMENŐ HŐFOK CÉL) ———
+- platform: template
+  sensors:
+    kazan_eloremeno_cel:
+      friendly_name: "Kazán előremenő cél"
+      unit_of_measurement: "°C"
+      value_template: >
+        {% set T_out = states('sensor.ble_temperature_kuls_hmer') | float(0) %}
+        {% if T_out >= 15 %} 40
+        {% elif T_out >= 10 %} 41
+        {% elif T_out >= 5 %} 43
+        {% elif T_out >= 0 %} 45
+        {% elif T_out >= -5 %} 45
+        {% elif T_out >= -10 %} 46
+        {% else %} 50
+        {% endif %}
+
+
+
+
+- platform: template
+  sensors:
+    futes_tehetetlensegi_ido_teljes_perc:
+      friendly_name: "Fűtés - Teljes Korrigált Tehetetlenségi Idő (Perc)"
+      unit_of_measurement: "min"
+      value_template: >
+        {# Alap Tehetetlenségi Idő Percben #}
+        {% set T_alap_perc = states('input_number.futes_tehetetlensegi_ido_min') | float(3.0) %}
+        
+        {# Fűtési Ráta (°C/h) - a stabil beállított érték #}
+        {% set R_futes = states('input_number.heating_rate') | float(0.5) %}
+        
+        {# Mért Túllövés a Korrekciós Input Number-ből #}
+        {% set O_korrekcio_c = states('input_number.futes_tulloves_korrekcio_c') | float(0.0) %}
+        
+        {# Szükséges Idő Korrekció (Percben): (Túllövés / Ráta) * 60 #}
+        {# A ráta nem lehet nulla #}
+        {% set T_korrekcio_perc = (O_korrekcio_c / R_futes) * 60 if R_futes > 0.01 else 0.0 %}
+        
+        {# Teljes, Korrigált Idő Percben #}
+        {{ (T_alap_perc + T_korrekcio_perc) | round(2) }}
+
+
+
+- platform: template
+  sensors:
+    kazan_virtualis_kulso_homerseklet:
+      friendly_name: "Kazán Virtuális Külső Hőmérséklet"
+      unit_of_measurement: "°C"
+      value_template: >
+        {% set t_külső = states('sensor.külső_hőmérséklet') | float(15) %}
+        {% set t_cél = state_attr('climate.futes', 'temperature') | float(21) %}
+        {% set t_aktuális = states('sensor.kisnappali_homerseklet_atlag') | float(20) %}
+        {% set faktor = 4.0 %}
+        
+        {{ (t_külső + ((t_cél - t_aktuális) * faktor)) | round(1) }}
+
+
