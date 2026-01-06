@@ -1,1 +1,57 @@
 
+alias: Auto Fűtés v3 - Kazán BEKAPCSOLÁS (Holtsáv & Soft Start)
+description: >-
+  Bekapcsolja a kazánt a célhőmérséklethez képest meghatározott holtsáv (0.2°C)
+  elérésekor. Beállítja a Soft Startot.
+triggers:
+  - minutes: /1
+    trigger: time_pattern
+  - entity_id: climate.futes
+    attribute: temperature
+    trigger: state
+conditions:
+  - condition: state
+    entity_id: input_boolean.futes_uzemmod_auto
+    state: "on"
+  - condition: state
+    entity_id: switch.boiler_digipot_boyler_on_off
+    state: "off"
+  - condition: template
+    value_template: >
+      {% set target = state_attr('climate.futes', 'temperature') | float(21.8)
+      %} {% set current = states('sensor.kisnappali_homerseklet_atlag') |
+      float(0) %} {% set rate_c_per_hour = states('input_number.cooling_rate') |
+      float(-0.20) | abs %} {% set time_minutes =
+      states('input_number.futes_tehetetlensegi_ido_min') | float(3.0) %} {% set
+      comp_temp = (rate_c_per_hour / 60) * time_minutes %}  {% set min_delta =
+      0.2 %}
+
+      {{ 
+        is_number(current) and 
+        current < (target - comp_temp - min_delta)
+      }}
+actions:
+  - target:
+      entity_id: number.boiler_digipot_boiler_temperature
+    data:
+      value: 4
+    action: number.set_value
+  - target:
+      entity_id: switch.boiler_digipot_boyler_on_off
+    action: switch.turn_on
+  - data:
+      message: >
+        {% set target = state_attr('climate.futes', 'temperature') | float(21.8)
+        %}   {% set current = states('sensor.kisnappali_homerseklet_atlag') |
+        float(0) %}   {% set time_minutes =
+        states('input_number.futes_tehetetlensegi_ido_min') | float(3.0) %}  {%
+        set rate = states('input_number.cooling_rate') | float(-0.20) | abs %}
+        {% set pred_drop = (rate / 60) * time_minutes %}
+
+        BEKAPCSOLÁS (Predikcióval): Aktuális T ({{ current | round(2) }}°C)
+        alacsonyabb, mint a Cél ({{ target }}°C) mínusz {{ pred_drop | round(2)
+        }}°C prediktív korrekció. I-tag már nem itt nullázva.
+      level: warning
+    action: system_log.write
+mode: single
+        
