@@ -1,3 +1,6 @@
+futes_be:
+ name: "Fűtés"
+ initial: off
 
 futes_uzemmod_auto:
   name: "Fűtés Üzemmód: Automata / Manuális"
