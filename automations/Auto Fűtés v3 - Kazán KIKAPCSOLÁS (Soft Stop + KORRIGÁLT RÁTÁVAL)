@@ -1,1 +1,51 @@
 
+alias: Auto Fűtés v3 - Kazán KIKAPCSOLÁS (Soft Stop + KORRIGÁLT RÁTÁVAL)
+description: >-
+  Kikapcsolja a kazánt a becsült túllövési pontnál, de legalább 5 percet vár az
+  indulás után. A becslés a fűtési sebesség (heating_rate) és a tanult
+  tehetetlenségi idő alapján történik.
+triggers:
+  - minutes: /1
+    trigger: time_pattern
+  - entity_id: climate.futes
+    attribute: temperature
+    trigger: state
+conditions:
+  - condition: state
+    entity_id: input_boolean.futes_uzemmod_auto
+    state: "on"
+  - condition: state
+    entity_id: switch.boiler_digipot_boyler_on_off
+    state: "on"
+  - condition: template
+    value_template: >
+      {% set last_on =
+      as_timestamp(states.switch.boiler_digipot_boyler_on_off.last_changed) %}
+      {% set now_ts = as_timestamp(now()) %} {{ (now_ts - last_on) > 300 }}
+  - condition: template
+    value_template: >
+      {% set t_aktualis = states('sensor.kisnappali_homerseklet_atlag') |
+      float(0) %} {% set t_cel = state_attr('climate.futes', 'temperature') |
+      float(21.8) %} {% set heating_rate = states('input_number.heating_rate') |
+      float(0.5) %} {% set time_to_stabilize_h =
+      states('sensor.futes_tehetetlensegi_ido_teljes_perc') | float(3.0) / 60 %}
+      {% set dinamikus_korrekcio = (-1.1) * heating_rate * time_to_stabilize_h |
+      round(2) %} {{ (t_aktualis >= (t_cel + dinamikus_korrekcio)) and
+      is_number(t_aktualis) }}
+actions:
+  - target:
+      entity_id: switch.boiler_digipot_boyler_on_off
+    action: switch.turn_off
+  - data:
+      message: >
+        SOFT STOP KIKAPCSOLÁS: Kazán legalább 5 percet futott. Aktuális T ({{
+        states('sensor.kisnappali_homerseklet_atlag') | float(0) | round(2)
+        }}°C) >= Kikapcsolási pont ({{ (state_attr('climate.futes',
+        'temperature') | float(21.8) + ((-1) *
+        (states('input_number.heating_rate') | float(0.5)) *
+        (states('sensor.futes_tehetetlensegi_ido_teljes_perc') | float(3.0) /
+        60))) | round(2) }}°C). Dinamikus korrekció és Soft Stop feltétel
+        teljesült.
+      level: warning
+    action: system_log.write
+mode: single
