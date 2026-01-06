@@ -1,1 +1,68 @@
 
+alias: >-
+  Guardrail 10 v.9: Modulációs Vezérlés (Delta T-alapú Külső T szimulálás +
+  Finomhangolás)
+description: >
+  Fokozatosan modulálja a kazánnak "hazudott" külső hőmérsékletet
+  (number.boiler_digipot_boiler_temperature) a Delta T és a rendszer állapota
+  alapján. Cél Delta T 5.0 °C, P-szorzó 0.25-re csökkentve a stabilizáció
+  érdekében.
+triggers:
+  - minutes: /3
+    trigger: time_pattern
+conditions:
+  - condition: state
+    entity_id: input_boolean.futes_uzemmod_auto
+    state: "on"
+  - condition: state
+    entity_id: switch.boiler_digipot_boyler_on_off
+    state: "on"
+  - condition: template
+    value_template: >
+      {# Ellenőrizzük, hogy minden szenzor érvényes numerikus értéket ad #} {{
+      is_number(states('sensor.boiler_digipot_eloremeno_viz_hofok')) and
+         is_number(states('sensor.boiler_digipot_visszatero_viz_hofok')) and
+         is_number(states('sensor.ble_temperature_kuls_hmer')) }}
+actions:
+  - variables:
+      delta_t_ideal: 5
+      korrekcio_szorzo: 0.25
+      step_limit: 3
+      min_szimulalt: -10
+      max_szimulalt: 15
+      eloremeno_t: "{{ states('sensor.boiler_digipot_eloremeno_viz_hofok') | float(0) }}"
+      visszatero_t: "{{ states('sensor.boiler_digipot_visszatero_viz_hofok') | float(0) }}"
+      t_kuls_aktualis: "{{ states('sensor.ble_temperature_kuls_hmer') | float(10) }}"
+      t_prev: "{{ states('number.boiler_digipot_boiler_temperature') | float(4.0) }}"
+      delta_t_aktualis: "{{ (eloremeno_t - visszatero_t) | round(1) }}"
+      hiba_faktor: "{{ (delta_t_ideal - delta_t_aktualis) | round(2) }}"
+      p_korrekcio: "{{ hiba_faktor * korrekcio_szorzo | round(2) }}"
+      t_raw: "{{ (t_kuls_aktualis - p_korrekcio) | float | round(2) }}"
+      t_limited: >-
+        {{ [max(t_raw | float, min_szimulalt | float), max_szimulalt | float] |
+        min | round(2) }}
+      t_kuls_target: >
+        {% set diff = t_limited | float - t_prev | float %} {% set step_limit_f
+        = step_limit | float %}
+
+        {% if diff > step_limit_f %}
+          {{ (t_prev | float + step_limit_f) | round(2) }}
+        {% elif diff < (0 - step_limit_f) %}
+          {{ (t_prev | float - step_limit_f) | round(2) }}
+        {% else %}
+          {{ t_limited | float | round(2) }}
+        {% endif %}
+  - target:
+      entity_id: number.boiler_digipot_boiler_temperature
+    data:
+      value: "{{ t_kuls_target | float }}"
+    action: number.set_value
+  - data:
+      message: >
+        MODULÁCIÓ T-SZIMULÁCIÓ (ΔT alapú).  ΔT: {{ delta_t_aktualis }}°C (Cél:
+        {{ delta_t_ideal }}°C),  Hiba: {{ hiba_faktor }}°C, Korrekció: {{
+        p_korrekcio }}°C,  Valós Külső T: {{ t_kuls_aktualis }}°C,  Szimulált
+        Külső T: {{ t_kuls_target }}°C
+      level: info
+    action: system_log.write
+mode: single
