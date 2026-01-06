@@ -1,6 +1,33 @@
 # w.t.-esphome
 esphome heating with weather tracking
 
+WESTEN STAR CONDENS 24  kondenzációs kazán vezerlese HA  alól.
+
+Opentherm nélküli, on-off vezérlésű kazán, modulciós vezérlése, külső hőmérséklet szimulációval.
+
+Hozzavalók: 
+
+ESP8266 Wemos mini d1
+H11F1 FET opto coupler
+4.7 kOhm 0.5W ADC felső osztó
+1 kOhm 0.5W  ADC  alsó  osztó
+220 Ohm 0.5W -- 
+                Értéke változhat (a kazántól fűggően), 
+                az H11F1 opto LED-jének a megfelelő munkapontját(áramát) állítja be.
+                 
+                Ki kell kisérletezni, hogy a +-20 C⁰ hőmérsékleti határok között a linearitása megfelelő                     legyen.
+                (az esp-ben number.boiler_digipot_boiler_temperature értékének változtatásával                               ellenőrizheted, hogy a kazán kijelzőjén megjelenő, külső hőmérséklet, megegyezik-e a   
+                beállított értékkel)
+
+1 db npn tranzisztor, amivel az on-off relét kapcsolod.
+                 
+                 Saját példám, mivel megtartottam (esp hiba esetére) az eredeti COMPUTER RF kezelőt és                        vezérlőjét, igy a vezérlőbe beépített relé-t használtam fel erre a célra, azaz
+                 közvetlenül a relét kapcsoló tranzisztor bázisát vezérlem.
+
+   
+
+
+
 használt entitasok, sensorok listája:
 
 sensor.kisnappali_homerseklet_atlag  beltéri átlaghőmérséklet  
