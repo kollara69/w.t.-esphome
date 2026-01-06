@@ -1,1 +1,12 @@
 
+futes_uzemmod_auto:
+  name: "Fűtés Üzemmód: Automata / Manuális"
+  initial: on
+  
+futes_ratavesztes_hiba:
+  name: Fűtési Ráta Veszteség Hiba (Guardrail)
+  initial: off
+  
+boiler_on_off:
+  name: Kazán fűtes on-off
+  initial: off
