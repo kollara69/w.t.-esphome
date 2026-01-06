@@ -1,5 +1,11 @@
 Home Assistant Fűtésvezérlés v3 – Komplett Prediktív Kazánvezérlő Rendszer.
 
+
+FIGYELEM!
+SEMMIFELE FELELŐSSÉGET NEM VÁLLOLOK, HOGY NÁLAD IS MINDEN ÚGY FOG MŰKÖDNI, AHOGY AZ ÉN RENDSZEREMBEN.
+
+
+
 Áttekintés:
 
 Ez egy  teljesen automatizált, önkalibráló fűtésvezérlő rendszer Home Assistant alapokon, amely egy hagyományos kondenzációs gázkazán energiahatékony és komfortos üzemeltetését biztosítja,
