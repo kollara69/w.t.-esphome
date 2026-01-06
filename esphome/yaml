@@ -1,1 +1,172 @@
 
+esphome:
+  name: boiler-digipot
+  on_boot:
+    priority: 800
+    then:
+      - switch.turn_off: relay1
+      - switch.turn_off: relay2
+
+esp8266:
+  board: d1_mini
+
+wifi:
+  ssid: Server
+  password: Makiati69
+  min_auth_mode: WPA
+  
+captive_portal:
+
+logger:
+
+ota:
+  platform: esphome
+  password: Makiati69
+
+web_server:
+  port: 80
+
+# OneWire busz definiálása (GPIO0 = D3)
+one_wire:
+  - platform: gpio
+    pin: GPIO0
+#  PWM kimenet a H11F1 tipúsi OPTO-COUPLER-hez (NTC szimuláció)
+output:
+  - platform: esp8266_pwm
+    pin: GPIO14
+    frequency: 1000 Hz
+    id: boiler_digipot
+
+  - platform: esp8266_pwm
+    pin: GPIO2
+    frequency: 1000 Hz
+    id: status_led_output
+
+#  Hőmérséklet → PWM szimuláció (-25…+25°C)
+number:
+  - platform: template
+    name: "Boiler Temperature"
+    id: boiler_temp
+    optimistic: true
+    min_value: -20
+    max_value: 20
+    step: 1.0  # Fokok lépése 1°C
+    initial_value: 0
+    mode: slider
+    on_value:
+      then:
+        - lambda: |-
+            // PWM karakterisztika (-25…+25°C)
+            const int n = 10;  // 10 érték a -25-től +25-ig
+            const float pwms[n] = {0.31, 0.34, 0.40, 0.45, 0.50, 0.60, 0.65, 0.70, 0.75, 1.00};  //  PWM táblázat
+            const float temps[n] = {-25, -19, -14, -9, -5, 3.7, 9, 13.6, 19, 25};  // A hőmérsékletek, amelyekhez a PWM tartozik
+
+            float T = x;  // aktuális hőmérséklet
+            float pwm = pwms[0];
+
+            // Interpoláció a hőmérséklethez tartozó PWM értékekhez
+            if (T <= temps[0]) {
+              pwm = pwms[0];
+            } else if (T >= temps[n-1]) {
+              pwm = pwms[n-1];
+            } else {
+              for (int i=0; i<n-1; i++) {
+                if (T >= temps[i] && T < temps[i+1]) {
+                  float ratio = (T - temps[i]) / (temps[i+1] - temps[i]);
+                  pwm = pwms[i] + ratio * (pwms[i+1] - pwms[i]);
+                  break;
+                }
+              }
+            }
+
+            // PWM határok érvényesítése
+            if (pwm < 0.0) pwm = 0.0;
+            if (pwm > 1.0) pwm = 1.0;
+
+            id(boiler_digipot).set_level(pwm);  // PWM érték beállítása
+            ESP_LOGI("ntc_pwm", "T=%.1f°C → PWM=%.3f", T, pwm);
+
+api:
+  services:
+    - service: set_temp
+      variables:
+        temp: float
+      then:
+        - number.set:
+            id: boiler_temp
+            value: !lambda "return temp;"
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO5
+      allow_other_uses: true
+      mode:
+        input: true
+        pullup: true
+    id: relay_switch1
+    name: "boyler on-off"
+
+  - platform: gpio
+    pin:
+      number: GPIO4
+      allow_other_uses: true
+      mode:
+        input: true
+        pullup: true
+    id: relay_switch2
+    name: "boyler tilt"
+
+switch:
+  - platform: gpio
+    pin:
+      number: GPIO5
+      allow_other_uses: true
+    name: "boyler on-off"
+    id: relay1
+
+  - platform: gpio
+    pin:
+      number: GPIO4
+      allow_other_uses: true
+    name: "boyler tilt"
+    id: relay2
+
+sensor:
+  # DS18B20 Hőmérséklet érzékelő az előremenő vízhez
+  - platform: dallas_temp 
+    name: "Előremenő Víz Hőfok"
+    id: eloremeno_viz_temp
+    # Itt kell megadni az ELSŐ DS18B20 egyedi címét (8 bájt)
+    # CSERÉLD KI a VALÓDI CÍMRE!
+    address: 0x1e0625436a7b8d28
+    
+  # 🆕 DS18B20 Hőmérséklet érzékelő a visszatérő vízhez
+  - platform: dallas_temp 
+    name: "Visszatérő Víz Hőfok"
+    id: visszatero_viz_temp
+    # Itt kell megadni a MÁSODIK DS18B20 egyedi címét (8 bájt)
+    # CSERÉLD KI a VALÓDI CÍMRE!
+    address: 0x4f0625439566fb28
+    
+  - platform: adc
+    pin: A0
+    name: "kazanvezerlo_analog_a0"
+# adc-ben érzékeli a hagyományos termosztát be-kikapcsolását. 
+# 10K/1KOhm osztóval 
+
+interval:
+  - interval: 500ms
+    then:
+      - lambda: |-
+          static uint32_t counter = 0;
+          counter++;
+          bool tilt_on = id(relay_switch2).state;
+          bool boiler_on = id(relay_switch1).state;
+          if (boiler_on && !tilt_on) {
+            id(status_led_output).set_level((counter % 4 < 2) ? 1.0 : 0.0);
+          } else if (tilt_on) {
+            id(status_led_output).set_level((counter % 2 == 0) ? 1.0 : 0.0);
+          } else {
+            id(status_led_output).set_level(0.5);
+          }
