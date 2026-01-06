@@ -5,7 +5,7 @@ alias: >-
 description: >
   Fokozatosan modulálja a kazánnak "hazudott" külső hőmérsékletet
   (number.boiler_digipot_boiler_temperature) a Delta T és a rendszer állapota
-  alapján. Cél Delta T 5.0 °C, P-szorzó 0.25-re csökkentve a stabilizáció
+  alapján. Cél: Delta T 5.0 °C, P-szorzó 0.25-re csökkentve a stabilizáció
   érdekében.
 triggers:
   - minutes: /3
