@@ -152,7 +152,7 @@ sensor:
     pin: A0
     name: "kazanvezerlo_analog_a0"
 #ADC-vel érzékeli a hagyományos termosztát be-kikapcsolását. 
-# 10K/1KOhm osztóval a visszajelző LED-ről.
+# 1K/4.7KOhm osztóval a visszajelző LED-ről.
 # automatizmushoz használhatod, ha értéke nagyobb, mint 0.2V, akkor a vész (külső) termosztáton hőigény van.
 
 interval:
