@@ -25,7 +25,7 @@ ota:
  web_server:
   port: 80
 
-# OneWire busz definiálása (GPIO0 = D3)
+# OneWire busz definiálása (GPIO0 = D3) Dallas érzékelők
 one_wire:
   - platform: gpio
     pin: GPIO0
