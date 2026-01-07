@@ -4,12 +4,6 @@
     max: 50
     step: 0.1
     unit_of_measurement: "°C"
-  last_temp:
-    name: Utolsó Mért Hőfok (AppDaemon)
-    min: 0
-    max: 50
-    step: 0.1
-    unit_of_measurement: "°C"
 
 
   heating_rate:
