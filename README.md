@@ -97,7 +97,7 @@ KT görbe alapján a kazán 20 értékre állítva.
 Tapasztalatom 3 hónap használat után.
 
 ~ 15% - 20% gázmennyiséget tudtam spórolni, a hagyományos on-off vezérléssel szemben.
-Túlmeretezett radiatorok vannak a rendszerben, így az előremenő víz max. 50 C⁰ lehet,
+Túlméretezett radiatorok vannak a rendszerben, így az előremenő víz max. 50 C⁰,
 így bőven benne marad a kazán a megfelelő kondenzációs tartományban.
 
 
@@ -123,8 +123,8 @@ Figyelem!
 
 1-2 db npn tranzisztor, ami az on-off relét illetve a teljes tiltást kapcsolja.
                  
-  Saját példám, mivel megtartottam (esp hiba esetére) az eredeti COMPUTER RF kezelőt és                       vezérlőjét, igy a vezérlőbe beépített relé-t használtam fel erre a célra, azaz
-  közvetlenül a relét kapcsoló tranzisztor bázisát vezérlem. 
+  Saját példám, mivel megtartottam (esp hiba esetére) az eredeti COMPUTER RF kezelőt és vezérlőjét, igy a vezérlőbe beépített relé-t használtam fel erre a célra, 
+  azaz közvetlenül a relét kapcsoló tranzisztor bázisát vezérlem. 
   Megfutás, hiba esetén, a tilt bontja az on - off relét, 
   még a vész termosztát (Computherm RF) esetén is!
    
@@ -134,7 +134,7 @@ Használjatok egészséggel.
 
 használt entitasok, sensorok listája:
 
-sensor.kisnappali_homerseklet_atlag  beltéri átlaghőmérséklet  
+sensor.kisnappali_homerseklet_atlag  leghidegebb helyiség átlaghőmérséklete  
 sensor.futes_tehetetlensegi_ido_teljes_perc  Tanult tehetetlenségi idő (perc)  
 sensor.boiler_digipot_eloremeno_viz_hofok  Előremenő vízzhőmérséklet  
 sensor.boiler_digipot_visszatero_viz_hofok  Visszatérő víz hőmérséklet  
