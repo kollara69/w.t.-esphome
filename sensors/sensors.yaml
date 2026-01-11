@@ -85,3 +85,15 @@
       icon_template: mdi:thermometer-alert
       value_template: "{{ states('input_number.modulacios_delta_t_cel') | float(0) | round(1) }}"     
       
+- platform: template
+  sensors:
+    kazan_virtualis_kulso_homerseklet:
+      friendly_name: "Kazán Virtuális Külső Hőmérséklet"
+      unit_of_measurement: "°C"
+      value_template: >
+        {% set t_külső = states('sensor.külső_hőmérséklet') | float(15) %}
+        {% set t_cél = state_attr('climate.futes', 'temperature') | float(21) %}
+        {% set t_aktuális = states('sensor.kisnappali_homerseklet_atlag') | float(20) %}
+        {% set faktor = 4.0 %}
+        
+        {{ (t_külső + ((t_cél - t_aktuális) * faktor)) | round(1) }}
