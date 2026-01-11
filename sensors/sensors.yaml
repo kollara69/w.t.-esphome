@@ -54,3 +54,34 @@
         
         {{ (t_külső + ((t_cél - t_aktuális) * faktor)) | round(1) }}
 
+
+
+- platform: template
+  sensors:
+    # 1. Felfűtési Ráta Kijelzés
+    futesi_rata_kijelzes:
+      friendly_name: "Felfűtési Ráta"
+      unit_of_measurement: "°C/h"
+      icon_template: mdi:thermometer-chevron-up
+      value_template: "{{ states('input_number.heating_rate') | float(0) | round(2) }}"
+    
+    # 2. Hűlési Ráta Kijelzés
+    hulesi_rata_kijelzes:
+      friendly_name: "Hűlési Ráta"
+      unit_of_measurement: "°C/h"
+      icon_template: mdi:thermometer-chevron-down
+      value_template: "{{ states('input_number.cooling_rate') | float(0) | round(2) }}"
+
+    # 3. Virtuális Külső Korrekciós Hőfok Kijelzés
+    kazan_kulso_korrekcio_kijelzes:
+      friendly_name: "Korrigált Külső Hőfok"
+      unit_of_measurement: "°C"
+      icon_template: mdi:thermometer-alert
+      value_template: "{{ states('input_number.kazan_kulso_korrekcio') | float(0) | round(1) }}"
+      
+    kazan_modulacios_cel:
+      friendly_name: "Modulációs cél"
+      unit_of_measurement: "°C"
+      icon_template: mdi:thermometer-alert
+      value_template: "{{ states('input_number.modulacios_delta_t_cel') | float(0) | round(1) }}"     
+      
