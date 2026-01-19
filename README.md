@@ -40,6 +40,7 @@ ESP8266 (D1 Mini) – kazánvezérlő modul.
 PWM kimenet optocsatolóval – NTC ellenállás szimuláció (kazán külsőhő-érzékelője).
 H11F1 optocsatoló - FET kimenettel, a teljes kazánoldali leválasztás miatt.
 2 × relé – kazán ki/bekapcsolás + tiltás (túlmelegedés védelem).
+2 db dallas i2c érzekelő (előre és a visszatèrő víz hőmérséklet mérésére)
 Státusz LED intelligens jelzéssel.
 
 Szoftver komponensek
@@ -106,6 +107,7 @@ Hozzavalók:
 
 ESP8266 Wemos mini d1
 H11F1 FET opto coupler
+2 db DS18B20 
 4.7 kOhm 0.5W ADC felső osztó
 1 kOhm 0.5W  ADC  alsó  osztó
 1 kOhm 1-2 db, a kapcsoló tranzisztorok bázisáramának beállítására
